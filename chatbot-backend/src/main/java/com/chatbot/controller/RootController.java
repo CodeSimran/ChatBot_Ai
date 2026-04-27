@@ -1,0 +1,14 @@
+package com.chatbot.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class RootController {
+
+    @GetMapping("/")
+    public String home() {
+        return "Backend is running successfully! Go to http://localhost:3000 to use the Chatbot.";
+    }
+}
+ 
