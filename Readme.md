@@ -128,6 +128,18 @@ curl -X POST http://localhost:8080/api/chat \
 DEVELOPMENT & DEPLOYMENT
 ------------------------
 
+### Deploy with Render
+1. Push this repository to GitHub.
+2. In Render, choose **New > Blueprint** and select the repository. Render will read `render.yaml`.
+3. Set at least one provider secret in the `chatbot-backend` service:
+  - `NVIDIA_API_KEY`
+  - `GEMINI_API_KEY`
+  - `GROQ_API_KEY`
+4. Set `AI_PROVIDER` to the provider whose key you supplied. The frontend provider selector can switch between configured providers while the backend is running.
+5. Deploy the blueprint. The frontend build receives the backend URL from `REACT_APP_API_URL`.
+
+Never commit real API keys. The values marked `sync: false` in `render.yaml` must be entered in Render's environment settings.
+
 ### Running the Application
 1. **Prerequisites**: Java 17, Maven
 2. **Build**: `mvn clean install`

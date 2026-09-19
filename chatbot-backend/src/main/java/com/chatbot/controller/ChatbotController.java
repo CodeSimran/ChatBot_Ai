@@ -4,6 +4,9 @@ import com.chatbot.service.ChatService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/chat")
 @CrossOrigin(origins = "*")
@@ -15,12 +18,13 @@ public class ChatbotController {
         this.chatService = chatService;
     }
 
-    // Request body is plain text, response is plain text
     @PostMapping
     public ResponseEntity<String> chat(@RequestBody String message) {
         try {
             String reply = chatService.chat(message);
             return ResponseEntity.ok(reply);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(503).body(e.getMessage());
         } catch (Exception e) {
             String errorMessage = "Error: " + e.getMessage();
             if (e.getCause() != null) {
@@ -30,9 +34,25 @@ public class ChatbotController {
         }
     }
 
-    // Handle GET request so the user doesn't see a Whitelabel Error Page in browser
     @GetMapping
     public ResponseEntity<String> checkStatus() {
         return ResponseEntity.ok("Backend is running successfully! Use POST to send messages.");
+    }
+
+    @GetMapping("/provider")
+    public ResponseEntity<String> getProvider() {
+        return ResponseEntity.ok(chatService.getProvider());
+    }
+
+    @PostMapping("/provider")
+    public ResponseEntity<String> setProvider(@RequestBody String providerName) {
+        String resolved = ChatService.resolveProviderName(providerName);
+        chatService.setProvider(resolved);
+        return ResponseEntity.ok(resolved);
+    }
+
+    @GetMapping("/logs")
+    public ResponseEntity<List<Map<String, String>>> getAiLogs() {
+        return ResponseEntity.ok(chatService.getAiLogs());
     }
 }
