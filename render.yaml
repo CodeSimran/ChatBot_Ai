@@ -21,8 +21,9 @@ services:
       - key: GROQ_MODEL
         value: llama-3.1-8b-instant
 
-  - type: static_site
+  - type: web
     name: chatbot-frontend
+    runtime: static
     rootDir: chatbot-frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: ./build
