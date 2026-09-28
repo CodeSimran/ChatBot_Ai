@@ -29,4 +29,4 @@ services:
     staticPublishPath: ./build
     envVars:
       - key: REACT_APP_API_URL
-        value: https://chatbot-backend.onrender.com
+        value: https://chatbot-ai-jsf1.onrender.com
