@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './App.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+const API_URL = process.env.REACT_APP_API_URL
+    || (process.env.NODE_ENV === 'production' ? 'https://chatbot-ai-jsf1.onrender.com' : 'http://localhost:8080');
 const Particle = ({ style }) => (
     <motion.div
         className="particle"
@@ -438,7 +439,7 @@ function App() {
                             whileHover={!loading && inputValue.trim() ? { scale: 1.05, boxShadow: "0 8px 25px rgba(139, 92, 246, 0.5)" } : {}}
                             whileTap={!loading && inputValue.trim() ? { scale: 0.95 } : {}}
                         >
-                        <span className="send-icon">{loading ? '⏳' : '➤'}</span>
+                            <span className="send-icon">{loading ? '⏳' : '➤'}</span>
                         </motion.button>
                     </form>
                 </motion.div>
