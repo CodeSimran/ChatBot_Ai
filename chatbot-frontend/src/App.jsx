@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './App.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-
 const Particle = ({ style }) => (
     <motion.div
         className="particle"
@@ -13,7 +12,6 @@ const Particle = ({ style }) => (
         transition={{ duration: 1.5, delay: Math.random() * 2 }}
     />
 );
-
 const formatLogTime = (timestamp) => {
     if (!timestamp) return 'Now';
     try {
@@ -28,7 +26,6 @@ const formatLogTime = (timestamp) => {
         return timestamp;
     }
 };
-
 function App() {
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState('');
@@ -63,32 +60,27 @@ function App() {
             });
         }
     };
-
     const loadAiLogs = async () => {
         try {
             const response = await fetch(`${API_URL}/api/chat/logs`);
             if (!response.ok) {
                 return;
             }
-
             const logs = await response.json();
             const safeLogs = Array.isArray(logs) ? logs : [];
             setDebugLogs(safeLogs);
-
             const severeLog = safeLogs.find(log => log.level === 'ERROR' || log.level === 'RATE_LIMIT' || log.level === 'WARN');
             setAiStatus(severeLog ? 'Degraded / Out of Service' : 'Operational');
         } catch (error) {
             console.error('Unable to load AI logs:', error);
         }
     };
-
     const loadSelectedProvider = async () => {
         try {
             const response = await fetch(`${API_URL}/api/chat/provider`);
             if (!response.ok) {
                 return;
             }
-
             const currentProvider = await response.text();
             if (currentProvider) {
                 setSelectedProvider(currentProvider);
@@ -97,23 +89,19 @@ function App() {
             console.error('Unable to load provider:', error);
         }
     };
-
     const handleProviderChange = async (event) => {
         const nextProvider = event.target.value;
         setSelectedProvider(nextProvider);
-
         try {
             const response = await fetch(`${API_URL}/api/chat/provider`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain' },
                 body: nextProvider
             });
-
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(errorText || 'Unable to change AI provider.');
             }
-
             const updatedProvider = await response.text();
             setSelectedProvider(updatedProvider || nextProvider);
             setAiStatus('Operational');
@@ -128,46 +116,38 @@ function App() {
             }, ...prev].slice(0, 25));
         }
     };
-
     useEffect(() => {
         loadAiLogs();
         loadSelectedProvider();
         const intervalId = setInterval(loadAiLogs, 5000);
         return () => clearInterval(intervalId);
     }, []);
-
     useEffect(() => {
         const timeout = setTimeout(() => scrollToBottom(), 100);
         return () => clearTimeout(timeout);
     }, [messages, loading, showLogs]);
-
     const formatTime = (date) => {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
-
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (!inputValue.trim()) return;
-
         const userMessage = {
             id: Date.now(),
             text: inputValue,
             sender: 'user',
             timestamp: new Date()
         };
-
         setMessages(prev => [...prev, userMessage]);
         const sentText = inputValue;
         setInputValue('');
         setLoading(true);
-
         try {
             const response = await fetch(`${API_URL}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain' },
                 body: sentText
             });
-
             if (!response.ok) {
                 const errorText = await response.text();
                 const details = errorText || `AI API error: ${response.status}`;
@@ -180,7 +160,6 @@ function App() {
                 setDebugLogs(prev => [encoded, ...prev].slice(0, 25));
                 throw new Error(details);
             }
-
             const replyText = await response.text();
             const aiMessage = {
                 id: Date.now() + 1,
@@ -212,19 +191,16 @@ function App() {
             inputRef.current?.focus();
         }
     };
-
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             handleSendMessage(e);
         }
     };
-
     return (
         <div className="app-wrapper">
             <div className="particles-bg">
                 {particles.map(p => <Particle key={p.id} style={p.style} />)}
             </div>
-
             <motion.div
                 className="orb orb-1"
                 animate={{
@@ -251,7 +227,6 @@ function App() {
                 }}
                 transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
             />
-
             <div className="chat-container-wrapper">
                 <motion.div
                     className="chat-container"
@@ -299,7 +274,6 @@ function App() {
                             </div>
                         </div>
                     </div>
-
                     <AnimatePresence>
                         {showLogs && (
                             <motion.div
@@ -332,7 +306,6 @@ function App() {
                             </motion.div>
                         )}
                     </AnimatePresence>
-
                     <div className="messages-container" ref={messagesContainerRef}>
                         <AnimatePresence>
                             {messages.length === 0 ? (
@@ -405,7 +378,6 @@ function App() {
                                     </motion.div>
                                 ))
                             )}
-
                             {loading && (
                                 <motion.div
                                     key="typing"
@@ -430,7 +402,6 @@ function App() {
                             )}
                         </AnimatePresence>
                     </div>
-
                     <form className="input-form" onSubmit={handleSendMessage}>
                         <div className="input-wrapper">
                             <input
@@ -467,7 +438,7 @@ function App() {
                             whileHover={!loading && inputValue.trim() ? { scale: 1.05, boxShadow: "0 8px 25px rgba(139, 92, 246, 0.5)" } : {}}
                             whileTap={!loading && inputValue.trim() ? { scale: 0.95 } : {}}
                         >
-                            <span className="send-icon">{loading ? '⏳' : '➤'}</span>
+                        <span className="send-icon">{loading ? '⏳' : '➤'}</span>
                         </motion.button>
                     </form>
                 </motion.div>
@@ -475,5 +446,4 @@ function App() {
         </div>
     );
 }
-
 export default App;
