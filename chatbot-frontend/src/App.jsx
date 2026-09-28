@@ -174,13 +174,14 @@ function App() {
             console.error('Error:', error);
             const errorMessageText = typeof error.message === 'string' ? error.message : '';
             const isMissingNvidiaKey = errorMessageText.includes('NVIDIA_API_KEY is not configured');
+            const isBackendError = errorMessageText.length > 0 && !errorMessageText.includes('Failed to fetch');
             const errorMessage = {
                 id: Date.now() + 1,
                 text: isMissingNvidiaKey
                     ? 'The backend is running, but NVIDIA_API_KEY is not configured. Set the environment variable and restart the backend.'
-                    : errorMessageText.includes('Error:')
-                        ? 'Backend Error: ' + errorMessageText
-                        : '⚠️ Could not connect to the server. Make sure the backend is running on http://localhost:8080',
+                    : isBackendError
+                        ? `Backend Error: ${errorMessageText}`
+                        : `⚠️ Could not connect to the server at ${API_URL}`,
                 sender: 'ai',
                 timestamp: new Date(),
                 isError: true
